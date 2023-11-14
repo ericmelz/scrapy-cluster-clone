@@ -7,6 +7,22 @@ This document contains step-by-step notes on how to setup scrapy-cluster on
 We try out each piece of the system before putting it all together
 
 ## Redis
+### local
+```
+# terminal 1
+redis-server
+
+# terminal 2
+redis-cli
+keys *
+set name eric
+get name
+^D
+
+# terminal1
+^C
+```
+
 
 ### docker-compose
 ```
