@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.31.2 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rest
+  name: rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: rest
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.31.2 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/scrapy-cluster-clone-default: "true"
+        io.kompose.service: rest
+    spec:
+      containers:
+        - image: istresearch/scrapy-cluster:rest-ci-dev
+          name: rest
+          ports:
+            - containerPort: 5343
+              hostPort: 5343
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

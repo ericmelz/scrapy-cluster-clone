@@ -1,0 +1,19 @@
+(base) ericmelz@Erics-MBP scrapy-cluster-clone % kompose convert
+INFO Service name in docker-compose has been changed from "kafka_monitor" to "kafka-monitor" 
+INFO Service name in docker-compose has been changed from "redis_monitor" to "redis-monitor" 
+WARN Service "crawler" won't be created because 'ports' is not specified 
+WARN Volume mount on the host "/var/run/docker.sock" isn't supported - ignoring path on the host 
+WARN Service "kafka_monitor" won't be created because 'ports' is not specified 
+WARN Service "redis_monitor" won't be created because 'ports' is not specified 
+INFO Kubernetes file "kafka-service.yaml" created 
+INFO Kubernetes file "redis-service.yaml" created 
+INFO Kubernetes file "rest-service.yaml" created  
+INFO Kubernetes file "zookeeper-service.yaml" created 
+INFO Kubernetes file "crawler-deployment.yaml" created 
+INFO Kubernetes file "kafka-deployment.yaml" created 
+INFO Kubernetes file "kafka-claim0-persistentvolumeclaim.yaml" created 
+INFO Kubernetes file "kafka-monitor-deployment.yaml" created 
+INFO Kubernetes file "redis-deployment.yaml" created 
+INFO Kubernetes file "redis-monitor-deployment.yaml" created 
+INFO Kubernetes file "rest-deployment.yaml" created 
+INFO Kubernetes file "zookeeper-deployment.yaml" created 

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.31.2 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: redis-monitor
+  name: redis-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: redis-monitor
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.31.2 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/scrapy-cluster-clone-default: "true"
+        io.kompose.service: redis-monitor
+    spec:
+      containers:
+        - image: istresearch/scrapy-cluster:redis-monitor-ci-dev
+          name: redis-monitor
+          resources: {}
+      restartPolicy: Always
+status: {}
