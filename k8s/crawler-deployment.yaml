@@ -25,7 +25,7 @@ spec:
         io.kompose.service: crawler
     spec:
       containers:
-        - image: istresearch/scrapy-cluster:crawler-ci-dev
+        - image: ericmelz/eric-crawler:latest
           name: crawler
           resources: {}
       restartPolicy: Always

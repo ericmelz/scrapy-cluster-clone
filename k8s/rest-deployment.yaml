@@ -25,7 +25,7 @@ spec:
         io.kompose.service: rest
     spec:
       containers:
-        - image: istresearch/scrapy-cluster:rest-ci-dev
+        - image: ericmelz/eric-crawler-rest:latest
           name: rest
           ports:
             - containerPort: 5343

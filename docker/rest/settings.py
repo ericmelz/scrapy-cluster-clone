@@ -6,16 +6,27 @@ import os
 def str2bool(v):
     return str(v).lower() in ('true', '1') if type(v) == str else bool(v)
 
+print('**** ERM DEBUGGING: HERE ARE THE ENVIRONMENT VARIABLES')
+for key, value in os.environ.items():
+    print(f"{key}: {value}")
+print('****')
+
+# Scrapy Cluster Settings
+# ~~~~~~~~~~~~~~~~~~~~~~~
+
+# Redis host configuration
+# Note (erm 2023-11-14):
+# Modified some env var keys because minikube injects conflicting environment variables
+# example: REDIS_PORT=tcp://10.108.55.52:6379
+REDIS_HOST = os.getenv('REDIS_SERVICE_HOST', 'redis')
+REDIS_PORT = int(os.getenv('REDIS_SERVICE_PORT', 6379))
+REDIS_DB = int(os.getenv('REDIS_SERVICE_DB', 0))
+REDIS_PASSWORD = os.getenv('REDIS_SERVICE_PASSWORD', None)
+REDIS_SOCKET_TIMEOUT = int(os.getenv('REDIS_SOCKET_TIMEOUT', 10))
+
 # Flask configuration
 FLASK_LOGGING_ENABLED = os.getenv('FLASK_LOGGING_ENABLED', True)
 FLASK_PORT = int(os.getenv('FLASK_PORT', 5343))
-
-# Redis host information
-REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
-REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
-REDIS_DB = int(os.getenv('REDIS_DB', 0))
-REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
-REDIS_SOCKET_TIMEOUT = int(os.getenv('REDIS_SOCKET_TIMEOUT', 10))
 
 # Kafka server information ------------
 KAFKA_HOSTS = [x.strip() for x in os.getenv('KAFKA_HOSTS', 'kafka:9092').split(',')]

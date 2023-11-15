@@ -2,8 +2,8 @@ FROM python:3.6
 MAINTAINER Madison Bahmer <madison.bahmer@istresearch.com>
 
 # os setup
-RUN apt-get update && apt-get -y install \
-  python-lxml \
+RUN apt-get update && apt-get upgrade -y && apt-get -y install \
+  python3-lxml \
   build-essential \
   libssl-dev \
   libffi-dev \

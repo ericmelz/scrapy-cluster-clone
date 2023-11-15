@@ -211,7 +211,7 @@ mamma
 kafka-console-consumer --bootstrap-server localhost:9092 --topic testing --from-beginning
 ```
 
-## Redis Monitor, Kafka Monitor
+## Rest of crawler
 
 ### k8s
 This requires a special docker build due to modifications:
@@ -221,13 +221,19 @@ minikube ssh
 docker images
 docker rmi ericmelz/eric-redis-monitor:latest
 docker rmi ericmelz/eric-kafka-monitor:latest
+docker rmi ericmelz/eric-crawler:latest
+docker rmi ericmelz/eric-crawler-rest:latest
 docker images
 ^D
 
 docker build -t ericmelz/eric-redis-monitor:latest -f docker/redis-monitor/Dockerfile.py3 .
 docker build -t ericmelz/eric-kafka-monitor:latest -f docker/kafka-monitor/Dockerfile.py3 .
+docker build -t ericmelz/eric-crawler:latest -f docker/crawler/Dockerfile.py3 .
+docker build -t ericmelz/eric-crawler-rest:latest -f docker/rest/Dockerfile.py3 .
 docker push ericmelz/eric-redis-monitor:latest
 docker push ericmelz/eric-kafka-monitor:latest
+docker push ericmelz/eric-crawler:latest
+docker push ericmelz/eric-crawler-rest:latest
 ```
 
 
@@ -265,4 +271,56 @@ kubectl exec -it $pod -- bash
 ./run_docker_tests.sh
 ^D
 
+# deploy crawler
+kubectl apply -f k8s/crawler-deployment.yaml
+
+# examine logs - should have some output
+pod=$(kubectl get pods|grep crawler|cut -d' ' -f 1)
+kubectl logs $pod
+
+# run tests
+kubectl exec -it $pod -- bash
+./run_docker_tests.sh
+^D
+
+# deploy rest
+kubectl apply -f k8s/rest-deployment.yaml
+kubectl apply -f k8s/rest-service.yaml
+
+# examine logs - should have some output
+pod=$(kubectl get pods|grep rest|cut -d' ' -f 1)
+kubectl logs $pod
+
+# run tests
+kubectl exec -it $pod -- bash
+./run_docker_tests.sh
+^D
+
 ```
+
+## Test crawl
+```
+# Terminal 1 - crawl results
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+python kafkadump.py dump -t demo.crawled_firehose
+
+# Terminal 2 - action results
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+python kafkadump.py dump -t demo.outbound_firehose
+
+# Terminal 3 - crawler
+pod=$(kubectl get pods|grep crawler|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+scrapy runspider crawling/spiders/link_spider.py
+
+# Terminal 4 - commands
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+python kafka_monitor.py feed '{"url": "http://dmoztools.net", "appid":"testapp", "crawlid":"abc123"}'
+```
+
+You should see crawl results come out in terminal 1
+See [scrapy-crawler quickstart](https://scrapy-cluster.readthedocs.io/en/latest/topics/introduction/quickstart.html) for more tests.
+
