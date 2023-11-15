@@ -211,3 +211,27 @@ mamma
 kafka-console-consumer --bootstrap-server localhost:9092 --topic testing --from-beginning
 ```
 
+## Redis Monitor
+### k8s
+Start in the k8s state for kafka, namely the following service should be up in minikube:
+- zookeeper
+- kafka
+
+Note the redis-monitor has been modified from the original to avoid env conflicts with k8s.
+```
+# deploy redis
+kubectl apply -f k8s/redis-deployment.yaml
+kubectl apply -f k8s/redis-service.yaml
+
+# deploy redis-monitor
+kubectl apply -f k8s/redis-monitor-deployment.yaml
+
+# examine logs
+pod=$(kubectl get pods|grep redis-monitor|cut -d' ' -f 1)
+kubectl logs $pod
+
+# run tests
+kubectl exec -it $pod -- bash
+./run_docker_tests.sh
+^D
+```
