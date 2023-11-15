@@ -25,7 +25,7 @@ spec:
         io.kompose.service: redis-monitor
     spec:
       containers:
-        - image: istresearch/scrapy-cluster:redis-monitor-ci-dev
+        - image: ericmelz/eric-redis-monitor:latest
           name: redis-monitor
           resources: {}
       restartPolicy: Always
