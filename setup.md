@@ -324,3 +324,60 @@ python kafka_monitor.py feed '{"url": "http://dmoztools.net", "appid":"testapp",
 You should see crawl results come out in terminal 1
 See [scrapy-crawler quickstart](https://scrapy-cluster.readthedocs.io/en/latest/topics/introduction/quickstart.html) for more tests.
 
+## Simplified setup
+```
+date
+minikube start
+
+kubectl apply -f k8s/zookeeper-deployment.yaml
+kubectl wait --for=condition=available --timeout=30s deployment/zookeeper
+kubectl apply -f k8s/zookeeper-service.yaml
+kubectl apply -f k8s/kafka-deployment.yaml
+kubectl wait --for=condition=available --timeout=30s deployment/kafka
+kubectl apply -f k8s/kafka-service.yaml
+kubectl apply -f k8s/redis-deployment.yaml
+kubectl wait --for=condition=available --timeout=30s deployment/redis
+kubectl apply -f k8s/redis-service.yaml
+kubectl apply -f k8s/redis-monitor-deployment.yaml
+kubectl apply -f k8s/kafka-monitor-deployment.yaml
+kubectl apply -f k8s/crawler-deployment.yaml
+kubectl apply -f k8s/rest-deployment.yaml
+kubectl apply -f k8s/rest-service.yaml
+date
+```
+
+# Shutdown
+```
+kubectl delete svc --all
+kubectl delete deploy --all
+minikube stop
+```
+
+## Simplified test
+
+## Testing k8s features
+```
+# Terminal 1 - commands
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+
+# Terminal 2 - crawl results
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+python kafkadump.py dump -t demo.crawled_firehose
+
+# Terminal 3 - crawler
+pod=$(kubectl get pods|grep crawler|cut -d' ' -f 1)
+kubectl exec -it $pod -- bash
+scrapy runspider crawling/spiders/link_spider.py
+
+# Terminal 1
+python kafka_monitor.py feed '{"url": "http://dmoztools.net", "appid":"testapp", "crawlid":"abc123"}'
+
+# watch terminal 2
+```
+
+# resilience - kill a crawler
+
+# scaling - add a crawler
+```
