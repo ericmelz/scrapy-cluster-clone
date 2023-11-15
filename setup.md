@@ -211,8 +211,26 @@ mamma
 kafka-console-consumer --bootstrap-server localhost:9092 --topic testing --from-beginning
 ```
 
-## Redis Monitor
+## Redis Monitor, Kafka Monitor
+
 ### k8s
+This requires a special docker build due to modifications:
+```
+kubectl delete deployment redis-monitor
+minikube ssh
+docker images
+docker rmi ericmelz/eric-redis-monitor:latest
+docker rmi ericmelz/eric-kafka-monitor:latest
+docker images
+^D
+
+docker build -t ericmelz/eric-redis-monitor:latest -f docker/redis-monitor/Dockerfile.py3 .
+docker build -t ericmelz/eric-kafka-monitor:latest -f docker/kafka-monitor/Dockerfile.py3 .
+docker push ericmelz/eric-redis-monitor:latest
+docker push ericmelz/eric-kafka-monitor:latest
+```
+
+
 Start in the k8s state for kafka, namely the following service should be up in minikube:
 - zookeeper
 - kafka
@@ -226,7 +244,7 @@ kubectl apply -f k8s/redis-service.yaml
 # deploy redis-monitor
 kubectl apply -f k8s/redis-monitor-deployment.yaml
 
-# examine logs
+# examine logs - should have some output
 pod=$(kubectl get pods|grep redis-monitor|cut -d' ' -f 1)
 kubectl logs $pod
 
@@ -234,4 +252,17 @@ kubectl logs $pod
 kubectl exec -it $pod -- bash
 ./run_docker_tests.sh
 ^D
+
+# deploy kafka-monitor
+kubectl apply -f k8s/kafka-monitor-deployment.yaml
+
+# examine logs - should have some output
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl logs $pod
+
+# run tests
+kubectl exec -it $pod -- bash
+./run_docker_tests.sh
+^D
+
 ```

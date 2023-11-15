@@ -4,11 +4,19 @@ import os
 def str2bool(v):
     return str(v).lower() in ('true', '1') if type(v) == str else bool(v)
 
-# Redis host information
-REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
-REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
-REDIS_DB = int(os.getenv('REDIS_DB', 0))
-REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
+print('**** ERM DEBUGGING: HERE ARE THE ENVIRONMENT VARIABLES')
+for key, value in os.environ.items():
+    print(f"{key}: {value}")
+print('****')
+
+# Redis host configuration
+# Note (erm 2023-11-14):
+# Modified some env var keys because minikube injects conflicting environment variables
+# example: REDIS_PORT=tcp://10.108.55.52:6379
+REDIS_HOST = os.getenv('REDIS_SERVICE_HOST', 'redis')
+REDIS_PORT = int(os.getenv('REDIS_SERVICE_PORT', 6379))
+REDIS_DB = int(os.getenv('REDIS_SERVICE_DB', 0))
+REDIS_PASSWORD = os.getenv('REDIS_SERVICE_PASSWORD', None)
 REDIS_SOCKET_TIMEOUT = int(os.getenv('REDIS_SOCKET_TIMEOUT', 10))
 
 # Kafka server information

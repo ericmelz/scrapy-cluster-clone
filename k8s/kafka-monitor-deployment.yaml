@@ -25,7 +25,7 @@ spec:
         io.kompose.service: kafka-monitor
     spec:
       containers:
-        - image: istresearch/scrapy-cluster:kafka-monitor-ci-dev
+        - image: ericmelz/eric-kafka-monitor:latest
           name: kafka-monitor
           resources: {}
       restartPolicy: Always

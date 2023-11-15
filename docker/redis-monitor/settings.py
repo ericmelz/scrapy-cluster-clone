@@ -6,7 +6,7 @@ import os
 def str2bool(v):
     return str(v).lower() in ('true', '1') if type(v) == str else bool(v)
 
-print('**** DEBUGGING: HERE ARE THE ENVIRONMENT VARIABLES')
+print('**** ERM DEBUGGING: HERE ARE THE ENVIRONMENT VARIABLES')
 for key, value in os.environ.items():
     print(f"{key}: {value}")
 print('****')
