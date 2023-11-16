@@ -326,12 +326,12 @@ See [scrapy-crawler quickstart](https://scrapy-cluster.readthedocs.io/en/latest/
 
 ## Simplified setup
 ```
-date
 minikube start
 
 kubectl apply -f k8s/zookeeper-deployment.yaml
 kubectl wait --for=condition=available --timeout=30s deployment/zookeeper
 kubectl apply -f k8s/zookeeper-service.yaml
+kubectl apply -f k8s/kafka-claim0-persistentvolumeclaim.yaml
 kubectl apply -f k8s/kafka-deployment.yaml
 kubectl wait --for=condition=available --timeout=30s deployment/kafka
 kubectl apply -f k8s/kafka-service.yaml
@@ -343,7 +343,6 @@ kubectl apply -f k8s/kafka-monitor-deployment.yaml
 kubectl apply -f k8s/crawler-deployment.yaml
 kubectl apply -f k8s/rest-deployment.yaml
 kubectl apply -f k8s/rest-service.yaml
-date
 ```
 
 # Shutdown
