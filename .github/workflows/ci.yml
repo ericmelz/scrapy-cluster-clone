@@ -22,5 +22,14 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Build and Push Docker Image to ecr
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: ericmelz/creepy-crawler
+        dockerfile: docker/crawler/Dockerfile.py3
+        registry: public.ecr.aws/o5r4m2u4/devrepo
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
 
