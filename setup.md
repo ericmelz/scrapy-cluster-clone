@@ -380,5 +380,3 @@ python kafka_monitor.py feed '{"url": "http://dmoztools.net", "appid":"testapp",
 
 # scaling - add a crawler
 ```
-
-DELETE THIS - trigger build 
