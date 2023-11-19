@@ -339,10 +339,8 @@ install awscli locally:
 brew install awscli
 aws configure
 # type access key, secret key, etc
-```
 
-Put ECR login into eks as a secret:
-```
+# inject ecr login into k8s
 ECR_PASSWORD=$(aws ecr get-login-password --region us-east-1)
 kubectl create secret docker-registry ecr-secret --docker-server=638173936794.dkr.ecr.us-east-1.amazonaws.com --docker-username=AWS --docker-password="${ECR_PASSWORD}"
 ```
