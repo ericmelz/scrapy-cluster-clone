@@ -326,6 +326,8 @@ See [scrapy-crawler quickstart](https://scrapy-cluster.readthedocs.io/en/latest/
 
 ## Simplified setup
 ### AWS auth
+Create ECR repos, 1 per docker image
+
 In AWS create an IAM user with ECR access to your repos
 Attach the following managed policies to the user:
 - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
@@ -339,6 +341,8 @@ aws configure
 # type access key, secret key, etc
 ```
 
+Put ECR login into eks as a secret:
+```
 ECR_PASSWORD=$(aws ecr get-login-password --region us-east-1)
 kubectl create secret docker-registry ecr-secret --docker-server=638173936794.dkr.ecr.us-east-1.amazonaws.com --docker-username=AWS --docker-password="${ECR_PASSWORD}"
 ```
