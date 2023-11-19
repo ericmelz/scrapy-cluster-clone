@@ -16,7 +16,7 @@ jobs:
     - name: Build and Push Docker Image to ecr
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
-        image: ericmelz/creepy-crawler
+        image: devrepo1/creepy-crawler
         dockerfile: docker/crawler/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
       env:
