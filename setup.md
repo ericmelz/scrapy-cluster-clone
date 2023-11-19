@@ -325,8 +325,7 @@ You should see crawl results come out in terminal 1
 See [scrapy-crawler quickstart](https://scrapy-cluster.readthedocs.io/en/latest/topics/introduction/quickstart.html) for more tests.
 
 ## Simplified setup
-AWS auth
-```
+### AWS auth
 In AWS create an IAM user with ECR access to your repos
 Attach the following managed policies to the user:
 - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
