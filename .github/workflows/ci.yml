@@ -28,6 +28,7 @@ jobs:
         image: ericmelz/creepy-crawler
         dockerfile: docker/crawler/Dockerfile.py3
         registry: public.ecr.aws/o5r4m2u4/devrepo
+      env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
