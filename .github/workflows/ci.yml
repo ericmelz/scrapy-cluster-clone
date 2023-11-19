@@ -6,7 +6,7 @@ on:
     branches: [ kompose ]
 
 jobs:
-  build-scrapy:
+  build-eric-crawler:
 
     runs-on: ubuntu-latest
   
@@ -16,12 +16,52 @@ jobs:
     - name: Build and Push Docker Image to ecr
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
-        image: devrepo1
+        image: eric-crawler
         dockerfile: docker/crawler/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  build-eric-kafka-monitor:
+
+    runs-on: ubuntu-latest
+  
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build and Push Docker Image to ecr
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: eric-kafka-monitor
+        dockerfile: docker/kafka-onitor/Dockerfile.py3
+        registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  build-eric-redis-monitor:
+
+    runs-on: ubuntu-latest
+  
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build and Push Docker Image to ecr
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: eric-kafka-monitor
+        dockerfile: docker/redis-monitor/Dockerfile.py3
+        registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
+
+
+
+
 
 
 
