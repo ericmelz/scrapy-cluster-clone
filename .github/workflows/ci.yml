@@ -34,7 +34,7 @@ jobs:
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: eric-kafka-monitor
-        dockerfile: docker/kafka-onitor/Dockerfile.py3
+        dockerfile: docker/kafka-monitor/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -50,7 +50,7 @@ jobs:
     - name: Build and Push Docker Image to ecr
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
-        image: eric-kafka-monitor
+        image: eric-redis-monitor
         dockerfile: docker/redis-monitor/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
       env:
