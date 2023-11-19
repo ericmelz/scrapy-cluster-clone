@@ -325,6 +325,12 @@ You should see crawl results come out in terminal 1
 See [scrapy-crawler quickstart](https://scrapy-cluster.readthedocs.io/en/latest/topics/introduction/quickstart.html) for more tests.
 
 ## Simplified setup
+AWS auth
+```
+ECR_PASSWORD=$(aws ecr get-login-password --region us-east-1)
+kubectl create secret docker-registry ecr-secret --docker-server=638173936794.dkr.ecr.us-east-1.amazonaws.com --docker-username=AWS --docker-password="${ECR_PASSWORD}"
+```
+
 ```
 minikube start
 
