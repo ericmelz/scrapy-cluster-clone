@@ -25,12 +25,11 @@ spec:
         io.kompose.service: rest
     spec:
       containers:
-        - image: ericmelz/eric-crawler-rest:latest
-          name: rest
-          ports:
-            - containerPort: 5343
-              hostPort: 5343
-              protocol: TCP
+        - image: 638173936794.dkr.ecr.us-east-1.amazonaws.com/eric-crawler-rest:kompose-149baff
+          name: eric-crawler-rest
           resources: {}
+      imagePullSecrets:
+      - name: ecr-secret
+      restartPolicy: Always
       restartPolicy: Always
 status: {}
