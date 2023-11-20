@@ -78,6 +78,19 @@ Or, if you don't want/need a background service you can just run:
   SERVER_JVMFLAGS="-Dapple.awt.UIElement=true" /opt/homebrew/opt/zookeeper/bin/zkServer start-foreground
 ```
 
+ubuntu
+```
+apt install zookeeper
+
+sudo /usr/share/zookeeper/bin/zkServer.sh start-foreground
+
+# separate terminal
+sudo /usr/share/zookeeper/bin/zkCli.sh
+
+# see below for zk testing
+```
+
+
 Testing:
 ```
 SERVER_JVMFLAGS="-Dapple.awt.UIElement=true" /opt/homebrew/opt/zookeeper/bin/zkServer start-foreground
@@ -103,23 +116,25 @@ ls /
 create /zk_test my_data1
 ls /
 get /zk_test
-^C
+^D
 docker-compose down
 ```
 
 ### k8s
 ```
+minikube start
+kubectl delete svc --all
+kubectl delete deploy --all
 ls -l k8s | grep zoo
 cat k8s/zookeeper-deployment.yaml
 cat k8s/zookeeper-service.yaml
 kubectl apply -f k8s/zookeeper-deployment.yaml
 kubectl apply -f k8s/zookeeper-service.yaml
 
-# note port
-minikube service zookeeper --url
+kubectl port-forward --address 0.0.0.0 service/zookeeper 2181:2181
 
 # seperate terminal
-zkcli -server 127.0.0.1:62120
+zkcli -server 127.0.0.1:2181
 ls /
 create /zk_test my_data2
 ls /
@@ -337,6 +352,7 @@ Create an AWS_ACCESS_KEY_ID and AWS_SECRET_KEY for the user
 install awscli locally:
 ```
 brew install awscli
+# ubuntu: sudo apt-get install awscli
 aws configure
 # type access key, secret key, etc
 
@@ -399,4 +415,81 @@ python kafka_monitor.py feed '{"url": "http://dmoztools.net", "appid":"testapp",
 # resilience - kill a crawler
 
 # scaling - add a crawler
+```
+
+## Setup linux
+Create an m5.xlarge instance with 200G storage
+
+```
+ip=35.85.50.126
+scp -i ~/keys/dev1.pem ~/.ssh/ubuntu/id_ed25519 ubuntu@$ip:/home/ubuntu/.ssh/
+
+ssh -i ~/keys/dev1.pem ubuntu@$ip
+
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt install plocate
+sudo apt install emacs-nox
+
+mkdir code
+cd code
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+git clone git@github.com:ericmelz/scrapy-cluster-clone.git
+cd scrapy-cluster-clone
+git checkout kompose
+git branch
+cd ..
+git clone git@github.com:ericmelz/scrapy-cluster-k8s-config.git
+
+# install docker
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker $USER && newgrp docker
+sudo docker run hello-world
+
+
+# install minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+minikube start --driver=docker
+minikube status
+
+# install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# setup awscli
+sudo apt-get install awscli
+aws configure
+# type access key, secret key, etc
+
+# inject ecr login into k8s
+ECR_PASSWORD=$(aws ecr get-login-password --region us-east-1)
+kubectl create secret docker-registry ecr-secret --docker-server=638173936794.dkr.ecr.us-east-1.amazonaws.com --docker-username=AWS --docker-password="${ECR_PASSWORD}"
+
+# install zookeeper
+sudo apt-get install zookeeper
+
+# install redis
+sudo apt install redis
+
+# install kafka
+sudo apt install kafka
 ```
