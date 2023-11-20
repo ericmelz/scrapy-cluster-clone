@@ -393,12 +393,13 @@ minikube stop
 ## Testing k8s features
 ```
 # Terminal 1 - commands
-pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
-kubectl exec -it $pod -- bash
+pod=$(kubectl -n scrapy-crawler get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl -n scrapy-crawler exec -it $pod -- bash
 
 # Terminal 2 - crawl results
-pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
-kubectl exec -it $pod -- bash
+#pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+pod=$(kubectl -n scrapy-crawler get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl -n scrapy-crawler exec -it $pod -- bash
 python kafkadump.py dump -t demo.crawled_firehose
 
 # Terminal 3 - crawler
@@ -492,4 +493,18 @@ sudo apt install redis
 
 # install kafka
 sudo apt install kafka
+```
+
+## Prometheus and grafana:
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus-operator prometheus-community/kube-prometheus-stack --namespace monitor
+kubectl --namespace monitor get pods -l "release=prometheus-operator"
+kubectl get pods -n monitor
+kubectl port-forward -n monitor --address 0.0.0.0 prometheus-prometheus-operator-kube-p-prometheus-0 9090
+kubectl port-forward -n monitor --address 0.0.0.0 prometheus-operator-grafana-69d97cb9fd-6rwrw 3000
+kubectl get secret --namespace monitor prometheus-operator-grafana   -o yaml
+echo "cHJvbS1vcGVyYXRvcg==" | base64 --decode
+echo "YWRtaW4=" | base64 --decode
 ```
