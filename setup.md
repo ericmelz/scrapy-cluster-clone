@@ -508,3 +508,34 @@ kubectl get secret --namespace monitor prometheus-operator-grafana   -o yaml
 echo "cHJvbS1vcGVyYXRvcg==" | base64 --decode
 echo "YWRtaW4=" | base64 --decode
 ```
+
+Datadog:
+See [Kubernetes agent installation](https://us5.datadoghq.com/signup/agent#kubernetes)
+
+```
+sudo snap install helm
+
+helm install -f datadog-values.yaml --name datadog-agent --set datadog.site='us5.datadoghq.com' --set datadog.apiKey=$apikey datadog/datadog
+```
+
+datadog-values.yaml:
+```
+datadog:
+  logs:
+    enabled: true
+    containerCollectAll: true
+```
+
+```
+helm upgrade -f datadog-values.yaml datadog-agent --set datadog.apiKey=$apikey datadog/datadog
+```
+
+Datadog Agent status:
+```
+kubectl exec -it pod/datadog-agent-zfgcm agent status
+```
+
+Datadog Stop Agent:
+```
+kubectl exec -it pod/datadog-agent-zfgcm agent stop
+```
