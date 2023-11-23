@@ -539,3 +539,9 @@ Datadog Stop Agent:
 ```
 kubectl exec -it pod/datadog-agent-zfgcm agent stop
 ```
+
+Launch Agent GUI on Mac:
+```
+datadog-agent launch-gui
+```
+
