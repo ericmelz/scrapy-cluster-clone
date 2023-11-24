@@ -4,11 +4,13 @@ from random import random
 from datadog import initialize, statsd
 import time
 
+from settings import STATSD_PORT, STATSD_HOST
+
 # See https://www.udemy.com/course/datadog-course/learn/lecture/34893206#overview
 APP_PORT = 8001
 
-OPTIONS = {'statsd_host': 'localhost',
-           'statsd_port': 8125}
+OPTIONS = {'statsd_host': STATSD_HOST,
+           'statsd_port': STATSD_PORT}
 
 
 class HandleRequests(http.server.BaseHTTPRequestHandler):
@@ -35,6 +37,7 @@ class HandleRequests(http.server.BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    print(f'{OPTIONS=}')
     initialize(**OPTIONS)
     server = http.server.HTTPServer(('localhost', APP_PORT), HandleRequests)
     server.serve_forever()
