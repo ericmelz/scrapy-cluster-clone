@@ -6,7 +6,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Copy settings
-COPY docker/datadoggie/settings.py /usr/src/app/datadoggie.py
+COPY docker/datadoggie/settings.py /usr/src/app/settings.py
 
 # install requirements
 COPY datadoggie/requirements.txt /usr/src/app/
