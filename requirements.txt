@@ -50,3 +50,4 @@ ujson==1.35
 w3lib==1.19.0  # Updated from 1.18.0
 zope.interface==4.5.0  # Updated from 4.4.2
 # Generated with piprot 0.9.10
+datadog==0.47.0
