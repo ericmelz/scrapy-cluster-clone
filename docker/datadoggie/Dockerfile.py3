@@ -5,6 +5,9 @@ RUN apt-get update
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+# Copy settings
+COPY docker/datadoggie/settings.py /usr/src/app/datadoggie.py
+
 # install requirements
 COPY datadoggie/requirements.txt /usr/src/app/
 RUN pip install --no-cache-dir -r requirements.txt
