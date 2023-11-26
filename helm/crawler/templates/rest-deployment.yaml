@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.31.2 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rest
+  name: rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: rest
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.31.2 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/scrapy-cluster-clone-default: "true"
+        io.kompose.service: rest
+    spec:
+      containers:
+        - image: 638173936794.dkr.ecr.us-east-1.amazonaws.com/eric-crawler-rest:kompose-149baff
+          name: eric-crawler-rest
+          resources: {}
+      imagePullSecrets:
+      - name: ecr-secret
+      restartPolicy: Always
+      restartPolicy: Always
+status: {}

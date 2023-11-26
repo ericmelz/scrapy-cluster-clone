@@ -585,3 +585,9 @@ kubectl config use-context minikube
 kubectl config use-context arn:aws:eks:us-west-2:638173936794:cluster/ci-eks-cluster
 
 ```
+
+Datadoggie
+```
+kubectl exec -it service/datadoggie -- bash -c "cd /usr/src/app && /usr/local/bin/python -c'from hitter import *; init(); hitit()'"
+```
+
