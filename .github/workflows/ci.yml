@@ -6,7 +6,8 @@ on:
     branches:
     - kompose
     paths-ignore:
-    - '**/[skip ci]*'
+    - helm/crawler/environments/ci/version.yaml
+    - helm/crawler/environments/dev/version.yaml
 
 jobs:
   build-eric-crawler:
