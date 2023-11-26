@@ -42,12 +42,5 @@ spec:
               hostPort: 9092
               protocol: TCP
           resources: {}
-          volumeMounts:
-            - mountPath: /var/run/docker.sock
-              name: kafka-claim0
       restartPolicy: Always
-      volumes:
-        - name: kafka-claim0
-          persistentVolumeClaim:
-            claimName: kafka-claim0
 status: {}

@@ -558,3 +558,11 @@ kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:443 -n argocd
 # login with admin user and below token (as in documentation):
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode && echo
 ```
+
+Switching between kubectl contexts
+See [notes](https://chat.openai.com/share/5c33311e-6252-4e94-bfc7-daa7f6ab517e)
+```
+kubectl config get-contexts
+kubectl config use-context <context-name>
+
+```
