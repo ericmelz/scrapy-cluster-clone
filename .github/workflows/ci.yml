@@ -4,6 +4,8 @@ name: Scrapy Cluster CI
 on:
   push:
     branches: [ kompose ]
+    paths-ignore:
+      - '**/[skip ci]*'
 
 jobs:
   build-eric-crawler:
@@ -91,3 +93,71 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
+  record-ci-version:
+    needs: [build-eric-kafka-monitor, build-eric-redis-monitor, build-eric-crawler-rest, build-datadoggie]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout repo
+      run: |
+        echo "checking out repo"
+
+    - name: write sha
+      run: |
+        echo "writing sha ${{ github.sha }}"
+
+    - name: commit and push
+      run: |
+        echo "writing sha"
+
+
+  deploy-crawler:
+    needs: [record-ci-version]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy crawler helm to CI cluster
+      run: |
+        echo "deploying to cluster"
+
+
+  test-crawler:
+    needs: [deploy-crawler]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Test kafka-monitor
+      run: |
+        echo "testing kafka-monitor"
+
+    - name: Test redis-monitor
+      run: |
+        echo "testing redis-monitor"
+
+    - name: Test rest
+      run: |
+        echo "testing rest"
+
+    - name: Test crawler
+      run: |
+        echo "testing crawler"
+
+    - name: Tear down
+      run: |
+        echo "tearing down crawler"
+
+
+  promote-to-dev:
+    needs: [test-crawler]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Copy sha
+      run: |
+        echo "copying ci sha to dev "
+
+    - name: Deploy crawler helm to Dev cluster
+      run: |
+        echo "deploying to dev cluster "
