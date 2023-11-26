@@ -3,9 +3,10 @@ name: Scrapy Cluster CI
 
 on:
   push:
-    branches: [ kompose ]
+    branches:
+    - kompose
     paths-ignore:
-      - '**/[skip ci]*'
+    - '**/[skip ci]*'
 
 jobs:
   build-eric-crawler:
