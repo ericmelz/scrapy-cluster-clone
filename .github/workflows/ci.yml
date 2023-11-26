@@ -109,8 +109,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v2
+
     - name: write sha
-      uses: actions/checkout@v2
       run: |
         echo "writing sha ${{ github.sha }}"
         echo "version: ${{ github.sha }}" > helm/crawler/environments/ci/version.yaml
