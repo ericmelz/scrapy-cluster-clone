@@ -13,11 +13,14 @@ jobs:
   build-eric-crawler:
 
     runs-on: ubuntu-latest
+    env:
+      SKIP_STEPS: true  # Set this to false to run all steps
   
     steps:
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
+      if env.SKIP_STEPS != 'true'
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: eric-crawler
@@ -35,6 +38,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
+      if env.SKIP_STEPS != 'true'
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: eric-kafka-monitor
@@ -52,6 +56,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
+      if env.SKIP_STEPS != 'true'
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: eric-redis-monitor
@@ -69,6 +74,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
+      if env.SKIP_STEPS != 'true'
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: eric-crawler-rest
@@ -87,6 +93,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
+      if env.SKIP_STEPS != 'true'
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: datadoggie
@@ -102,17 +109,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout repo
-      run: |
-        echo "checking out repo"
-
     - name: write sha
+      uses: actions/checkout@v2
       run: |
         echo "writing sha ${{ github.sha }}"
-
-    - name: commit and push
-      run: |
-        echo "writing sha"
+        echo "version: ${{ github.sha }}" > helm/crawler/environments/ci/version.yaml
+        git push origin kompose
 
 
   deploy-crawler:
