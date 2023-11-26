@@ -365,20 +365,21 @@ kubectl create secret docker-registry ecr-secret --docker-server=638173936794.dk
 minikube start
 
 kubectl apply -f k8s/zookeeper-deployment.yaml
-kubectl wait --for=condition=available --timeout=30s deployment/zookeeper
 kubectl apply -f k8s/zookeeper-service.yaml
-kubectl apply -f k8s/kafka-claim0-persistentvolumeclaim.yaml
 kubectl apply -f k8s/kafka-deployment.yaml
-kubectl wait --for=condition=available --timeout=30s deployment/kafka
 kubectl apply -f k8s/kafka-service.yaml
 kubectl apply -f k8s/redis-deployment.yaml
-kubectl wait --for=condition=available --timeout=30s deployment/redis
 kubectl apply -f k8s/redis-service.yaml
 kubectl apply -f k8s/redis-monitor-deployment.yaml
 kubectl apply -f k8s/kafka-monitor-deployment.yaml
 kubectl apply -f k8s/crawler-deployment.yaml
 kubectl apply -f k8s/rest-deployment.yaml
 kubectl apply -f k8s/rest-service.yaml
+
+kubectl wait --for=condition=available --timeout=30s deployment/zookeeper
+kubectl wait --for=condition=available --timeout=30s deployment/kafka
+kubectl wait --for=condition=available --timeout=30s deployment/redis
+
 ```
 
 # Shutdown
@@ -389,6 +390,23 @@ minikube stop
 ```
 
 ## Simplified test
+
+## running docker test
+```
+pod=$(kubectl get pods|grep kafka-monitor|cut -d' ' -f 1)
+kubectl exec $pod ./run_docker_tests.sh
+
+pod=$(kubectl get pods|grep redis-monitor|cut -d' ' -f 1)
+kubectl exec $pod ./run_docker_tests.sh
+
+pod=$(kubectl get pods|grep rest|cut -d' ' -f 1)
+kubectl exec $pod ./run_docker_tests.sh
+
+pod=$(kubectl get pods|grep crawler|cut -d' ' -f 1)
+kubectl exec $pod ./run_docker_tests.sh
+
+```
+
 
 ## Testing k8s features
 ```
@@ -563,6 +581,7 @@ Switching between kubectl contexts
 See [notes](https://chat.openai.com/share/5c33311e-6252-4e94-bfc7-daa7f6ab517e)
 ```
 kubectl config get-contexts
-kubectl config use-context <context-name>
+kubectl config use-context minikube
+kubectl config use-context arn:aws:eks:us-west-2:638173936794:cluster/ci-eks-cluster
 
 ```
