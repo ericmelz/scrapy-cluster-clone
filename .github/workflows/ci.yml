@@ -98,7 +98,7 @@ jobs:
 
 
   record-ci-version:
-    needs: [build-eric-kafka-monitor, build-eric-redis-monitor, build-eric-crawler-rest, build-datadoggie]
+    needs: [build-eric-kafka-monitor, build-eric-redis-monitor, build-eric-crawler-rest, build-eric-crawler, build-datadoggie]
     runs-on: ubuntu-latest
 
     steps:
