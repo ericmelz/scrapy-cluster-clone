@@ -159,7 +159,7 @@ jobs:
       with:
         version: '3.x'
 
-   - name: Deploy Helm Chart
+    - name: Deploy Helm Chart
       run: |
         helm upgrade --install ci-crawler ./helm/crawler --namespace default
 
