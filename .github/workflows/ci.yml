@@ -151,6 +151,18 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
 
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name ci-eks-cluster   
+
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: '3.x'
+
+   - name: Deploy Helm Chart
+      run: |
+        helm upgrade --install ci-crawler ./helm/crawler --namespace default
+
     - name: Deploy
       uses: cloudposse/github-action-deploy-helmfile@main
       id: deploy
