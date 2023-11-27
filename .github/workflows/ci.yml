@@ -156,6 +156,8 @@ jobs:
 
     - name: Install Helm
       uses: azure/setup-helm@v1
+      with:
+        version: 'v3.13.2'
 
     - name: Deploy Helm Chart
       run: |
@@ -166,25 +168,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Test kafka-monitor
-      run: |
-        echo "testing kafka-monitor"
-
     - name: Test redis-monitor
       run: |
-        echo "testing redis-monitor"
+        kubectl exec deployment/redis-monitor '/usr/src/app/run_docker_tests.sh'
+
+    - name: Test kafka-monitor
+      run: |
+        kubectl exec deployment/kafka-monitor '/usr/src/app/run_docker_tests.sh'
 
     - name: Test rest
       run: |
-        echo "testing rest"
+        kubectl exec deployment/rest '/usr/src/app/run_docker_tests.sh'
 
     - name: Test crawler
       run: |
-        echo "testing crawler"
+        kubectl exec deployment/crawler '/usr/src/app/run_docker_tests.sh'
 
     - name: Tear down
       run: |
-        echo "tearing down crawler"
+        helm uninstall ci-crawler
 
 
   promote-to-dev:
