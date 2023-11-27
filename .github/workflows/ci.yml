@@ -117,9 +117,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        token: ${{ secrets.ACTION_PAT }}  # Use the default GITHUB_TOKEN for checkout
+    - uses: actions/checkout@v3
 
     - name: Configure Git
       run: |
@@ -130,13 +128,14 @@ jobs:
       run: |
         echo "writing sha ${{ github.sha }}"
         echo "version: ${{ github.sha }}" > helm/crawler/environments/ci/version.yaml
+        git config --global user.name 'Github Actions (eric)'
+        git config --global user.email 'eric@emelz.com'
         cat helm/crawler/environments/ci/version.yaml
         git add helm/crawler/environments/ci/version.yaml
         git commit -m "Updated version with SHA"
+        echo "before push"
         git push origin kompose
-      env:
-        GITHUB_TOKEN: ${{ secrets.ACTION_PAT }}
-
+        echo "after push"
 
   deploy-crawler:
     needs: [record-ci-version]
