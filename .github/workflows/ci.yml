@@ -33,6 +33,8 @@ jobs:
   build-eric-kafka-monitor:
 
     runs-on: ubuntu-latest
+    env:
+      SKIP_STEPS: true  # Set this to false to run all steps
   
     steps:
     - uses: actions/checkout@v2
@@ -51,6 +53,8 @@ jobs:
   build-eric-redis-monitor:
 
     runs-on: ubuntu-latest
+    env:
+      SKIP_STEPS: true  # Set this to false to run all steps
   
     steps:
     - uses: actions/checkout@v2
@@ -69,6 +73,8 @@ jobs:
   build-eric-crawler-rest:
 
     runs-on: ubuntu-latest
+    env:
+      SKIP_STEPS: true  # Set this to false to run all steps
   
     steps:
     - uses: actions/checkout@v2
@@ -88,6 +94,8 @@ jobs:
   build-datadoggie:
 
     runs-on: ubuntu-latest
+    env:
+      SKIP_STEPS: true  # Set this to false to run all steps
 
     steps:
     - uses: actions/checkout@v2
@@ -110,12 +118,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}  # Use the default GITHUB_TOKEN for checkout
+
+    - name: Configure Git
+      run: |
+        git config --global user.name 'Github Actions (eric)'
+        git config --global user.email 'eric@emelz.com'
 
     - name: write sha
       run: |
         echo "writing sha ${{ github.sha }}"
         echo "version: ${{ github.sha }}" > helm/crawler/environments/ci/version.yaml
+        cat helm/crawler/environments/ci/version.yaml
+        git add helm/crawler/environments/ci/version.yaml
+        git commit -m "Updated version with SHA"
         git push origin kompose
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTION_PAT }}
 
 
   deploy-crawler:
