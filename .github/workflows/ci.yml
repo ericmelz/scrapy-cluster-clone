@@ -119,7 +119,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use the default GITHUB_TOKEN for checkout
+        token: ${{ secrets.ACTION_PAT }}  # Use the default GITHUB_TOKEN for checkout
 
     - name: Configure Git
       run: |
