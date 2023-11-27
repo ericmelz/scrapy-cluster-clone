@@ -156,24 +156,10 @@ jobs:
 
     - name: Install Helm
       uses: azure/setup-helm@v1
-      with:
-        version: '3.x'
 
     - name: Deploy Helm Chart
       run: |
         helm upgrade --install ci-crawler ./helm/crawler --namespace default
-
-    - name: Deploy
-      uses: cloudposse/github-action-deploy-helmfile@main
-      id: deploy
-      with:
-        aws-region: us-west-2
-        cluster: ci-eks-cluster
-        environment: ci
-        namespace: ci
-        helmfile-path: helm/crawler
-        operation: deploy
-        debug: false
 
   test-crawler:
     needs: [deploy-crawler]
