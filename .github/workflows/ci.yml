@@ -137,7 +137,7 @@ jobs:
         git push origin kompose
         echo "after push"
 
-  deploy-crawler:
+  deploy-crawler-to-ci:
     needs: [record-ci-version]
     runs-on: ubuntu-latest
 
@@ -163,8 +163,8 @@ jobs:
       run: |
         helm upgrade --install ci-crawler ./helm/crawler --namespace default
 
-  test-crawler:
-    needs: [deploy-crawler]
+  test-crawler-in-ci:
+    needs: [deploy-crawler-to-ci]
     runs-on: ubuntu-latest
 
     steps:
@@ -205,15 +205,70 @@ jobs:
         echo "temporarily disabling helm uninstall ci-crawler"
 
 
-  promote-to-dev:
-    needs: [test-crawler]
+  deploy-crawler-to-dev:
+    needs: [test-crawler-in-ci]
     runs-on: ubuntu-latest
 
     steps:
-    - name: Copy sha
-      run: |
-        echo "copying ci sha to dev "
+    - uses: actions/checkout@v3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
 
-    - name: Deploy crawler helm to Dev cluster
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name development-eks-cluster   
+
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: 'v3.13.2'
+
+    - name: Deploy Helm Chart
       run: |
-        echo "deploying to dev cluster "
+        helm upgrade --install ci-crawler ./helm/crawler --namespace default
+
+
+  test-crawler-in-dev:
+    needs: [deploy-crawler-to-dev]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.3'
+      id: install
+
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name development-eks-cluster   
+
+    - name: Test redis-monitor
+      run: |
+        kubectl exec deployment/redis-monitor '/usr/src/app/run_docker_tests.sh'
+
+    - name: Test kafka-monitor
+      run: |
+        kubectl exec deployment/kafka-monitor '/usr/src/app/run_docker_tests.sh'
+
+    - name: Test rest
+      run: |
+        kubectl exec deployment/rest '/usr/src/app/run_docker_tests.sh'
+
+    - name: Test crawler
+      run: |
+        kubectl exec deployment/crawler '/usr/src/app/run_docker_tests.sh'
+
+    - name: Tear down
+      run: |
+        echo "temporarily disabling helm uninstall development-crawler"
