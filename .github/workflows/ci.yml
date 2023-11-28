@@ -14,7 +14,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      SKIP_STEPS: true  # Set this to false to run all steps
+      SKIP_STEPS: false  # Set this to false to run all steps
   
     steps:
     - uses: actions/checkout@v2
