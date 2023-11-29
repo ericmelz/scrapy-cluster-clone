@@ -305,7 +305,6 @@ jobs:
   test-crawler-in-stage:
     needs: [deploy-crawler-to-stage]
     runs-on: ubuntu-latest
-    environment: stage
 
     steps:
     - name: Configure AWS credentials
