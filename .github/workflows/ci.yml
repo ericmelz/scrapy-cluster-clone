@@ -161,7 +161,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install ci-crawler ./helm/crawler --namespace default
+        helm upgrade --install ci-crawler ./helm/crawler --namespace default --wait --timeout 5m
 
   test-crawler-in-ci:
     needs: [deploy-crawler-to-ci]
@@ -229,7 +229,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install dev-crawler ./helm/crawler --namespace default
+        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m
 
 
   test-crawler-in-dev:
@@ -299,7 +299,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install stage-crawler ./helm/crawler --namespace default
+        helm upgrade --install stage-crawler ./helm/crawler --namespace default --wait --timeout 5m
 
 
   test-crawler-in-stage:
