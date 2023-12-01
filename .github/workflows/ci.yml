@@ -17,7 +17,14 @@ jobs:
       SKIP_STEPS: false  # Set this to false to run all steps
   
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v2
+
+    - name: test output
+      run: echo "short sha is ${{steps.short-sha.outputs.sha7}}"
 
     - name: Build and Push Docker Image to ecr
       if: env.SKIP_STEPS != 'true'
@@ -26,6 +33,7 @@ jobs:
         image: eric-crawler
         dockerfile: docker/crawler/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+        tags: ${{ steps.short-sha.outputs.sha7 }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
