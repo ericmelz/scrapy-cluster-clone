@@ -240,7 +240,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/dev/version.yaml --set version=${{ steps.short-sha.outputs.sha7 }}
+        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/dev/values.yaml --set version=${{ steps.short-sha.outputs.sha7 }}
 
 
   test-crawler-in-dev:
