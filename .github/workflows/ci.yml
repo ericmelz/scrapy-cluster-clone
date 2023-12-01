@@ -140,7 +140,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
-  record-ci-version:
+  deploy-crawler-to-ci:
     needs: [build-eric-kafka-monitor, build-eric-redis-monitor, build-eric-crawler-rest, build-eric-crawler, build-datadoggie]
     runs-on: ubuntu-latest
 
@@ -149,28 +149,6 @@ jobs:
       id: short-sha
       run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
 
-    - uses: actions/checkout@v3
-
-    - name: Configure Git
-      run: |
-        git config --global user.name 'Github Actions (eric)'
-        git config --global user.email 'eric@emelz.com'
-
-    - name: write sha
-      run: |
-        echo "writing sha ${{ steps.short-sha.outputs.sha7 }}"
-        echo "version: ${{ steps.short-sha.outputs.sha7 }}" > helm/crawler/environments/ci/version.yaml
-        git config --global user.name 'Github Actions (eric)'
-        git config --global user.email 'eric@emelz.com'
-        git add helm/crawler/environments/ci/version.yaml
-        git commit -m "Updated version with SHA"
-        git push origin kompose
-
-  deploy-crawler-to-ci:
-    needs: [record-ci-version]
-    runs-on: ubuntu-latest
-
-    steps:
     - uses: actions/checkout@v3
     
     - name: Configure AWS credentials
@@ -190,7 +168,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install ci-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/ci/version.yaml
+        helm upgrade --install ci-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/ci/values.yaml --set version=${{ steps.short-sha.outputs.sha7 }}"
 
   test-crawler-in-ci:
     needs: [deploy-crawler-to-ci]
@@ -239,17 +217,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v3
     
-    - name: copy sha from ci to dev
-      run: |
-        cp helm/crawler/environments/ci/version.yaml helm/crawler/environments/dev/version.yaml
-        git config --global user.name 'Github Actions (eric)'
-        git config --global user.email 'eric@emelz.com'
-        git add helm/crawler/environments/dev/version.yaml
-        git commit -m "Updated dev version with CI SHA"
-        git push origin kompose
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -267,7 +240,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/dev/version.yaml
+        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/dev/version.yaml --set version=${{ steps.short-sha.outputs.sha7 }}"
 
 
   test-crawler-in-dev:
@@ -318,17 +291,11 @@ jobs:
     environment: stage
 
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
     - uses: actions/checkout@v3
     
-    - name: copy sha from dev to stage
-      run: |
-        cp helm/crawler/environments/dev/version.yaml helm/crawler/environments/stage/version.yaml
-        git config --global user.name 'Github Actions (eric)'
-        git config --global user.email 'eric@emelz.com'
-        git add helm/crawler/environments/stage/version.yaml
-        git commit -m "Updated stage version with stage SHA"
-        git push origin kompose
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -346,7 +313,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install stage-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/stage/version.yaml
+        helm upgrade --install stage-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/environments/stage/values.yaml --set version=${{ steps.short-sha.outputs.sha7 }}"
 
 
   test-crawler-in-stage:
