@@ -45,6 +45,10 @@ jobs:
       SKIP_STEPS: false  # Set this to false to run all steps
   
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
@@ -54,6 +58,7 @@ jobs:
         image: eric-kafka-monitor
         dockerfile: docker/kafka-monitor/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+        tags: ${{ steps.short-sha.outputs.sha7 }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -65,6 +70,10 @@ jobs:
       SKIP_STEPS: false  # Set this to false to run all steps
   
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
@@ -74,6 +83,7 @@ jobs:
         image: eric-redis-monitor
         dockerfile: docker/redis-monitor/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+        tags: ${{ steps.short-sha.outputs.sha7 }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -85,6 +95,10 @@ jobs:
       SKIP_STEPS: false  # Set this to false to run all steps
   
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
@@ -94,6 +108,7 @@ jobs:
         image: eric-crawler-rest
         dockerfile: docker/rest/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+        tags: ${{ steps.short-sha.outputs.sha7 }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -106,6 +121,10 @@ jobs:
       SKIP_STEPS: false  # Set this to false to run all steps
 
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v2
 
     - name: Build and Push Docker Image to ecr
@@ -115,6 +134,7 @@ jobs:
         image: datadoggie
         dockerfile: docker/datadoggie/Dockerfile.py3
         registry: 638173936794.dkr.ecr.us-east-1.amazonaws.com
+        tags: ${{ steps.short-sha.outputs.sha7 }}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -125,6 +145,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Get short SHA
+      id: short-sha
+      run: echo "::set-output name=sha7::$(echo $GITHUB_SHA | cut -c1-7)"
+
     - uses: actions/checkout@v3
 
     - name: Configure Git
@@ -134,16 +158,13 @@ jobs:
 
     - name: write sha
       run: |
-        echo "writing sha ${{ github.sha }}"
-        echo "version: ${{ github.sha }}" > helm/crawler/environments/ci/version.yaml
+        echo "writing sha ${{ steps.short-sha.outputs.sha7 }}"
+        echo "version: ${{ steps.short-sha.outputs.sha7 }}" > helm/crawler/environments/ci/version.yaml
         git config --global user.name 'Github Actions (eric)'
         git config --global user.email 'eric@emelz.com'
-        cat helm/crawler/environments/ci/version.yaml
         git add helm/crawler/environments/ci/version.yaml
         git commit -m "Updated version with SHA"
-        echo "before push"
         git push origin kompose
-        echo "after push"
 
   deploy-crawler-to-ci:
     needs: [record-ci-version]
@@ -169,7 +190,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install ci-crawler ./helm/crawler --namespace default --wait --timeout 5m
+        helm upgrade --install ci-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/envrionments/ci/version.yaml
 
   test-crawler-in-ci:
     needs: [deploy-crawler-to-ci]
@@ -220,6 +241,15 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: copy sha from ci to dev
+      run: |
+        cp helm/crawler/environments/ci/version.yaml helm/crawler/environments/dev/version.yaml
+        git config --global user.name 'Github Actions (eric)'
+        git config --global user.email 'eric@emelz.com'
+        git add helm/crawler/environments/dev/version.yaml
+        git commit -m "Updated dev version with CI SHA"
+        git push origin kompose
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -237,7 +267,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m
+        helm upgrade --install dev-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/envrionments/dev/version.yaml
 
 
   test-crawler-in-dev:
@@ -290,6 +320,15 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: copy sha from dev to stage
+      run: |
+        cp helm/crawler/environments/dev/version.yaml helm/crawler/environments/stage/version.yaml
+        git config --global user.name 'Github Actions (eric)'
+        git config --global user.email 'eric@emelz.com'
+        git add helm/crawler/environments/stage/version.yaml
+        git commit -m "Updated stage version with stage SHA"
+        git push origin kompose
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -307,7 +346,7 @@ jobs:
 
     - name: Deploy Helm Chart
       run: |
-        helm upgrade --install stage-crawler ./helm/crawler --namespace default --wait --timeout 5m
+        helm upgrade --install stage-crawler ./helm/crawler --namespace default --wait --timeout 5m --values ./helm/crawler/envrionments/stage/version.yaml
 
 
   test-crawler-in-stage:

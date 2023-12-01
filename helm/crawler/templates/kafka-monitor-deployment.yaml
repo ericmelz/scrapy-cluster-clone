@@ -25,7 +25,7 @@ spec:
         io.kompose.service: kafka-monitor
     spec:
       containers:
-        - image: 638173936794.dkr.ecr.us-east-1.amazonaws.com/eric-kafka-monitor:kompose-53bf4da
+        - image: 638173936794.dkr.ecr.us-east-1.amazonaws.com/eric-kafka-monitor:{{.Values.version}}
           name: kafka-monitor
           resources: {}
       imagePullSecrets:
